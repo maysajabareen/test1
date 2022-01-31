@@ -3038,6 +3038,7 @@ public class SectioningServlet implements SectioningService, DisposableBean {
 				check.setFlag(EligibilityFlag.DEGREE_PLANS, CustomDegreePlansHolder.hasProvider());
 				check.setFlag(EligibilityFlag.NO_REQUEST_ARROWS, ApplicationProperty.OnlineSchedulingNoRequestArrows.isTrue());
 				check.setFlag(EligibilityFlag.CAN_REQUIRE, true);
+				check.setFlag(EligibilityFlag.SHOW_SCHEDULING_PREFS, false);
 				return check;
 			}
 			
@@ -3060,6 +3061,7 @@ public class SectioningServlet implements SectioningService, DisposableBean {
 			check.setFlag(EligibilityFlag.GWT_CONFIRMATIONS, ApplicationProperty.OnlineSchedulingGWTConfirmations.isTrue());
 			check.setFlag(EligibilityFlag.DEGREE_PLANS, CustomDegreePlansHolder.hasProvider());
 			check.setFlag(EligibilityFlag.NO_REQUEST_ARROWS, ApplicationProperty.OnlineSchedulingNoRequestArrows.isTrue());
+			check.setFlag(EligibilityFlag.SHOW_SCHEDULING_PREFS, true);
 			check.setSessionId(cx.getSessionId());
 			check.setStudentId(cx.getStudentId());
 			
