@@ -277,6 +277,11 @@ public class SaveStudentRequests implements OnlineSectioningAction<CourseRequest
 				cd.setPriority(priority);
 				if (r.isWaitList() && !Boolean.TRUE.equals(cd.getWaitlist()))
 					cd.setWaitlistedTimeStamp(ts);
+				if (r.isWaitList()) {
+					cd.setWaitListSwapWithCourseOffering(r.getWaitListSwapWithCourseOfferingId() == null ? null : CourseOfferingDAO.getInstance().get(r.getWaitListSwapWithCourseOfferingId(), helper.getHibSession()));
+				} else {
+					cd.setWaitListSwapWithCourseOffering(null);
+				}
 				cd.setWaitlist(r.isWaitList());
 				cd.setNoSub(r.isNoSub());
 				cd.setCritical(isCritical(false, courses, critical));
@@ -399,6 +404,11 @@ public class SaveStudentRequests implements OnlineSectioningAction<CourseRequest
 				cd.setPriority(priority);
 				if (r.isWaitList() && !Boolean.TRUE.equals(cd.getWaitlist()))
 					cd.setWaitlistedTimeStamp(ts);
+				if (r.isWaitList()) {
+					cd.setWaitListSwapWithCourseOffering(r.getWaitListSwapWithCourseOfferingId() == null ? null : CourseOfferingDAO.getInstance().get(r.getWaitListSwapWithCourseOfferingId(), helper.getHibSession()));
+				} else {
+					cd.setWaitListSwapWithCourseOffering(null);
+				}
 				cd.setWaitlist(r.isWaitList());
 				cd.setNoSub(r.isNoSub());
 				cd.setCritical(isCritical(true, courses, critical));
