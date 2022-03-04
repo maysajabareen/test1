@@ -707,6 +707,9 @@ public interface StudentSectioningMessages extends Messages {
 
 	@DefaultMessage("Not assigned.")
 	String courseNotAssigned();
+	
+	@DefaultMessage("To be wait-listed.")
+	String courseToBeWaitListed();
 
 	@DefaultMessage("Not Enrolled")
 	String courseNotEnrolled();
@@ -1789,6 +1792,9 @@ public interface StudentSectioningMessages extends Messages {
 
 	@DefaultMessage("<u>D</u>rop {0}")
 	String buttonQuickDrop(String course);
+	
+	@DefaultMessage("<u>W</u>ait-List {0}")
+	String buttonWaitList(String course);
 
 	@DefaultMessage("Do you want to drop {0} from your schedule?")
 	String confirmQuickDrop(String course);
@@ -2266,6 +2272,12 @@ public interface StudentSectioningMessages extends Messages {
 	@DefaultMessage("Registration errors were detected, but no override has been requested.")
 	String overrideNotRequested();
 	
+	@DefaultMessage("Enrolled in a course higher in the list of alternatives.")
+	String waitListLowPriority();
+	
+	@DefaultMessage("Current enrollment meets the requirements.")
+	String waitListRequirementsMet();
+	
 	@DefaultMessage("The following issues have been detected:\n{0}")
 	String requestWarnings(String errors);
 	
@@ -2292,6 +2304,9 @@ public interface StudentSectioningMessages extends Messages {
 	
 	@DefaultMessage("An override for the following registration issues has been requested:\n{0}")
 	String requestedWarnings(String errors);
+	
+	@DefaultMessage("Wait-list for {0} is not active.")
+	String waitListInactive(String course);
 	
 	@DefaultMessage("The following approvals have been requested:")
 	String requestedApprovals();
