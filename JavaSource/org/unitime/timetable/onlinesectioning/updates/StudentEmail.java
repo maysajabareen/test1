@@ -1051,6 +1051,17 @@ public class StudentEmail implements OnlineSectioningAction<Boolean> {
 				} else if (newRequest == null && course.getConsentLabel() != null) {
 					input.put("changeMessage", MSG.emailConsentRejected(course.getConsentLabel().toLowerCase()));
 				}
+				if (getOldOffering() != null && getOldEnrollment() != null) {
+					for (XSection old: getOldOffering().getSections(getOldEnrollment())) {
+						XSubpart subpart = getOldOffering().getSubpart(old.getSubpartId());
+						XSection parent = (old.getParentId() == null ? null : getOldOffering().getSection(old.getParentId()));
+						String requires = null;
+						if (parent != null)
+							requires = parent.getName(course.getCourseId());
+						listOfChanges.add(new TableSectionDeletedLine(newRequest, course, subpart, old, requires, getCourseUrl(session, course)));
+					}
+					input.put("changes", listOfChanges);
+				}
 			}
 		} else if (getOldStudent() != null && !getOldStudent().getRequests().isEmpty()) {
 			boolean somethingWasAssigned = false;
@@ -1281,6 +1292,10 @@ public class StudentEmail implements OnlineSectioningAction<Boolean> {
 							icon = "action_check.png";
 							iconText = ((msg == null ? "" : MSG.requestWarnings(msg) + "\n\n") + MSG.overrideApproved(rc.getCourseName()));
 							break;
+						case WAITLIST_INACTIVE:
+							icon = "action_check_gray.png";
+							iconText = ((msg == null ? "" : MSG.requestWarnings(msg) + "\n\n") + MSG.waitListInactive(rc.getCourseName()));
+							break;
 						default:
 							if (check.isError(rc.getCourseName()))
 								icon = "stop.png";
@@ -1310,7 +1325,12 @@ public class StudentEmail implements OnlineSectioningAction<Boolean> {
 						case OVERRIDE_REJECTED: status = MSG.reqStatusRejected(); break;
 						}
 					}
-					if (status.isEmpty()) status = MSG.reqStatusRegistered();
+					if (status.isEmpty()) {
+						if (request.isWaitList())
+							status = MSG.reqStatusWaitListed();
+						else
+							status = MSG.reqStatusRegistered();
+					}
 					if (prefs != null) courseRequests.hasPref = true;
 					String credit = (rc.hasCredit() ? (rc.getCreditMin().equals(rc.getCreditMax()) ? df.format(rc.getCreditMin()) : df.format(rc.getCreditMin()) + " - " + df.format(rc.getCreditMax())) : "");
 					String note = null;
@@ -1399,6 +1419,10 @@ public class StudentEmail implements OnlineSectioningAction<Boolean> {
 						case OVERRIDE_APPROVED:
 							icon = "action_check.png";
 							iconText = ((msg == null ? "" : MSG.requestWarnings(msg) + "\n\n") + MSG.overrideApproved(rc.getCourseName()));
+							break;
+						case WAITLIST_INACTIVE:
+							icon = "action_check_gray.png";
+							iconText = ((msg == null ? "" : MSG.requestWarnings(msg) + "\n\n") + MSG.waitListInactive(rc.getCourseName()));
 							break;
 						default:
 							if (check.isError(rc.getCourseName()))
@@ -1762,6 +1786,9 @@ public class StudentEmail implements OnlineSectioningAction<Boolean> {
 							requires = consent; consent = null;
 						}
 						listOfClasses.add(new TableSectionLine(cr, course, subpart, section, requires, getCourseUrl(session, course)));
+					}
+					if (cr.isWaitlist(wlMode) && getStudent().canAssign(cr, wlMode) && enrollment.equals(cr.getWaitListSwapWithCourseOffering()) && !cr.isRequired(enrollment, offering)) {
+						listOfClasses.add(new TableCourseLine(cr, course, getCourseUrl(session, course), true, null));
 					}
 				}
 			}
@@ -2189,6 +2216,7 @@ public class StudentEmail implements OnlineSectioningAction<Boolean> {
 		public void setTable(Table table);
 		public boolean isLast();
 		public boolean isFirst();
+		public boolean isWaitList();
 	}
 	
 	public static class TableCourseLine implements TableLine {
@@ -2237,6 +2265,9 @@ public class StudentEmail implements OnlineSectioningAction<Boolean> {
 		
 		@Override
 		public String getCredit() { return null; }
+		
+		@Override
+		public boolean isWaitList() { return iRequest.isWaitlist() && iWaitListEnabled && iRequest.getWaitListedTimeStamp() != null; }
 
 		@Override
 		public String getNote() {
@@ -2409,6 +2440,9 @@ public class StudentEmail implements OnlineSectioningAction<Boolean> {
 
 		@Override
 		public String getDate() { return getTime().getDatePatternName(); }
+		
+		@Override
+		public boolean isWaitList() { return false; }
 	}
 	
 	public static class TableLineFreeTime implements TableLine {
@@ -2488,6 +2522,9 @@ public class StudentEmail implements OnlineSectioningAction<Boolean> {
 		
 		@Override
 		public String getUrl() { return null; }
+		
+		@Override
+		public boolean isWaitList() { return false; }
 	}
 	
 	public static class TableSectionDeletedLine extends TableSectionLine {
